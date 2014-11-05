@@ -61,7 +61,13 @@ module.exports = function (api) {
 
         Cache.post({id: id}, function (err, data) {
             if (err) { return lien.end(err, 500); }
-            lien.end(data);
+            var post = data[0];
+            if (!post) {
+                return lien.end({
+                    error: "Post not found"
+                }, 404);
+            }
+            lien.end(post);
         });
     });
 
