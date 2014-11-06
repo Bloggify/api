@@ -5,9 +5,9 @@ Bloggify official api plugin.
 
 ```js
 {
-  "name": "_custom-client-files",
-  "source": "git@github.com:BloggifyPlugins/custom-client-files.git",
-  "version": "2.0.0"
+  "name": "_api",
+  "source": "git@github.com:Bloggify/api.git",
+  "version": "master"
 }
 ```
 
