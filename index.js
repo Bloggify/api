@@ -32,19 +32,12 @@ module.exports = function (api) {
           , pOptions = options.options
           ;
 
-        try {
-            pQuery = JSON.parse(pQuery);
-        } catch (e) {
-            pQuery = {};
+        for (var k in options) {
+            try {
+                options[k] = JSON.parse(options[k]);
+            } catch (e) {}
         }
-
-        try {
-            pOptions = JSON.parse(pOptions);
-        } catch (e) {
-            pOptions = {};
-        }
-
-        Cache.post(pQuery, pOptions, function (err, data) {
+        Cache.post(Object(options.query), Object(options.options), { markdown: options.markdown }, function (err, data) {
             if (err) { return lien.end(err, 500); }
             lien.end(data);
         });
