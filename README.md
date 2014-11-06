@@ -1,4 +1,4 @@
-# bloggify-api
+# Bloggify API
 Bloggify official api plugin.
 
 ## Installation
