@@ -11,6 +11,7 @@ module.exports = function (api) {
           , m_options: {}
           , options: {
                 noContent: true
+              , noBlog: true
             }
         };
 
