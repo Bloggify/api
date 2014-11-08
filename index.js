@@ -86,6 +86,7 @@ module.exports = function (api) {
             m_options: {}
           , options: {
                 noContent: true
+              , noBlog: true
             }
         };
 
@@ -93,8 +94,6 @@ module.exports = function (api) {
             def
           , lien.data
         );
-
-        lien.data.options.noBlog = true;
 
         Cache.page({slug: slug}, lien.data.m_options, lien.data.options, function (err, page) {
             if (err) { return lien.end(err, 500); }
