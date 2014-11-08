@@ -37,7 +37,8 @@ module.exports = function (api) {
                 options[k] = JSON.parse(options[k]);
             } catch (e) {}
         }
-        Cache.post(Object(options.query), Object(options.options), { markdown: options.markdown }, function (err, data) {
+
+        Cache.post(Object(options.query), Object(options.options), options, function (err, data) {
             if (err) { return lien.end(err, 500); }
             lien.end(data);
         });
