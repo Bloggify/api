@@ -1,44 +1,46 @@
-var Cache = require(Bloggify.ROOT + "/lib/common/cache");
+var Cache = require(Bloggify.ROOT + "/lib/common/cache")
+  , Utils = require(Bloggify.ROOT + "/utils")
+  ;
 
 module.exports = function (api) {
 
     Bloggify.server.page.add("/api/pages", function (lien) {
-        var options = lien.search
-          , pQuery = options.query
-          , pOptions = options.options
-          ;
 
-        try {
-            pQuery = JSON.parse(pQuery);
-        } catch (e) {
-            pQuery = {};
-        }
+        var def = {
+            query: {}
+          , m_options: {}
+          , options: {
+                noContent: true
+            }
+        };
 
-        try {
-            pOptions = JSON.parse(pOptions);
-        } catch (e) {
-            pOptions = {};
-        }
+        lien.data = Utils.mergeRecursive(
+            def
+          , lien.data
+        );
 
-        Bloggify.pages.find(pQuery, pOptions).toArray(function (err, pages) {
+        Cache.page(lien.data.query, lien.data.m_options, lien.data.options, function (err, pages) {
             if (err) { return lien.end(err, 500); }
             lien.end(pages);
         });
     });
 
     Bloggify.server.page.add("/api/posts", function (lien) {
-        var options = lien.search
-          , pQuery = options.query
-          , pOptions = options.options
-          ;
 
-        for (var k in options) {
-            try {
-                options[k] = JSON.parse(options[k]);
-            } catch (e) {}
-        }
+        var def = {
+            query: {}
+          , m_options: {}
+          , options: {
+                noContent: true
+            }
+        };
 
-        Cache.post(Object(options.query), Object(options.options), options, function (err, data) {
+        lien.data = Utils.mergeRecursive(
+            def
+          , lien.data
+        );
+
+        Cache.post(lien.data.query, lien.data.m_options, lien.data.options, function (err, data) {
             if (err) { return lien.end(err, 500); }
             lien.end(data);
         });
@@ -49,35 +51,57 @@ module.exports = function (api) {
         var id = parseInt((lien.pathName.match(/\/api\/post\/([0-9]+)$/) || [])[1]);
         if (isNaN(id)) {
             return lien.end({
-                error: "Post not found"
+                error: "Invalid post id."
             }, 404);
         }
 
-        Cache.post({id: id}, function (err, data) {
+        var def = {
+            m_options: {}
+          , options: {
+                noContent: true
+            }
+        };
+
+        lien.data = Utils.mergeRecursive(
+            def
+          , lien.data
+        );
+
+        Cache.post({id: id}, lien.data.m_options, lien.data.options, function (err, data) {
             if (err) { return lien.end(err, 500); }
-            var post = data[0];
-            if (!post) {
+            if (!data.length) {
                 return lien.end({
                     error: "Post not found"
                 }, 404);
             }
-            lien.end(post);
+            lien.end(data[0]);
         });
     });
 
     // TODO Regex
     Bloggify.server.page.add(/\/api\/page\/.*/, function (lien) {
         var slug = (lien.pathName.match(/\/api\/page\/(.*)/) || [])[1] || "";
-        Bloggify.pages.findOne({slug: slug}, function (err, page) {
-            if (err) { return lien.end(err, 500); }
-            if (lien.search.markdown === "true") {
-                lien.search.markdown = true;
+
+        var def = {
+            m_options: {}
+          , options: {
+                noContent: true
             }
-            Cache.file(Bloggify.config.pages + "/" + page.slug + ".md", {markdown: lien.search.markdown}, function (err, content) {
-                if (err) { return lien.end(404); }
-                page.content = content;
-                lien.end(page);
-            });
+        };
+
+        lien.data = Utils.mergeRecursive(
+            def
+          , lien.data
+        );
+
+        Cache.page({slug: slug}, lien.data.m_options, lien.data.options, function (err, page) {
+            if (err) { return lien.end(err, 500); }
+            if (!page.length) {
+                return lien.end({
+                    error: "Page not found"
+                }, 404)
+            }
+            lien.end(page[0]);
         });
     });
 };
