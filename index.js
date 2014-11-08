@@ -94,6 +94,8 @@ module.exports = function (api) {
           , lien.data
         );
 
+        lien.data.options.noBlog = true;
+
         Cache.page({slug: slug}, lien.data.m_options, lien.data.options, function (err, page) {
             if (err) { return lien.end(err, 500); }
             if (!page.length) {
