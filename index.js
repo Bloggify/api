@@ -1,6 +1,7 @@
 var Cache = require(Bloggify.ROOT + "/lib/common/cache")
   , Utils = require(Bloggify.ROOT + "/utils")
   , Fs = require("fs")
+  , GitHandlers = require("./git-handlers")
   ;
 
 module.exports = function (api) {
@@ -147,7 +148,7 @@ module.exports = function (api) {
         var page = Utils.cloneObject(pageData, true);
         delete page.content;
 
-        Bloggify.pages.insert(page, function (err) {
+        Bloggify.pages.update({ slug: page.slug }, page, { upsert: true}, function (err) {
 
             if (err) {
                 Bloggify.log(err, "error");
@@ -156,7 +157,8 @@ module.exports = function (api) {
                 }, 500);
             }
 
-            Fs.writeFile(Bloggify.config.pathContent + Bloggify.config.pages + "/" + pageData.slug + ".md", pageData.content, function (err) {
+            var fileName = Bloggify.config.pathContent + Bloggify.config.pages + "/" + pageData.slug + ".md";
+            Fs.writeFile(fileName, pageData.content, function (err) {
 
                 if (err) {
                     Bloggify.log(err, "error");
@@ -165,11 +167,93 @@ module.exports = function (api) {
                     }, 500);
                 }
 
-                if (!Bloggify._events["page:save"]) {
-                    lien.end(pageData);
-                } else {
-                    Bloggify.emit("page:save", lien, pageData);
+                GitHandlers.update("Page saved: " + pageData.title, function (err, data) {
+                    if (!Bloggify._events["page:save"]) {
+                        lien.end(pageData);
+                    } else {
+                        Bloggify.emit("page:save", lien, pageData);
+                    }
+                });
+            });
+        });
+    });
+
+    Bloggify.server.page.add("/api/save/post", "post", function (lien) {
+
+        var sessionData = lien.session.getData();
+        if (!sessionData) {
+            return lien.end({
+                error: "You're not authorized."
+            }, 403);
+        }
+
+        var articleData = lien.data
+          , invalidFields = []
+          ;
+
+        if (typeof articleData.title !== "string" || !articleData.title.length) {
+            invalidFields.push("title");
+        }
+
+        if (typeof pageData.content !== "string" || !pageData.content.length) {
+            invalidFields.push("content");
+        }
+
+        Bloggify.posts.count(function (err, count) {
+
+            if (err) {
+                Bloggify.log(err, "error");
+                return lien.end({
+                    error: "Internal server error."
+                }, 500);
+            }
+
+            articleData.id = parseInt(articleData.id || count + 1);
+            if (isNaN(articleData.id)) {
+                invalidFields.push("id");
+            }
+
+            if (invalidFields.length) {
+                return lien.end({
+                    error: "validate_error"
+                  , fields: invalidFields
+                }, 400);
+            }
+
+            articleData.slug = articleData.slug || Utils.slug(articleData.title);
+            articleData.date = new Date(articleData.date) || new Date();
+            articleData.by = sessionData.username || "Ghost";
+
+            var article = Utils.cloneObject(articleData, true);
+            delete article.content;
+
+            Bloggify.posts.update({ id: articleData }, article, { upsert: true}, function (err) {
+
+                if (err) {
+                    Bloggify.log(err, "error");
+                    return lien.end({
+                        error: "Internal server error."
+                    }, 500);
                 }
+
+                var fileName = Bloggify.config.pathContent + Bloggify.config.posts + "/" + articleData.id + ".md";
+                Fs.writeFile(fileName, articleData.content, function (err) {
+
+                    if (err) {
+                        Bloggify.log(err, "error");
+                        return lien.end({
+                            error: "Internal server error."
+                        }, 500);
+                    }
+
+                    GitHandlers.update("Article saved: " + articleData.title, function (err, data) {
+                        if (!Bloggify._events["article:save"]) {
+                            lien.end(articleData);
+                        } else {
+                            Bloggify.emit("article:save", lien, articleData);
+                        }
+                    });
+                });
             });
         });
     });
