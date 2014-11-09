@@ -1,5 +1,6 @@
 var Cache = require(Bloggify.ROOT + "/lib/common/cache")
   , Utils = require(Bloggify.ROOT + "/utils")
+  , Fs = require("fs")
   ;
 
 module.exports = function (api) {
@@ -104,6 +105,72 @@ module.exports = function (api) {
                 }, 404)
             }
             lien.end(page[0]);
+        });
+    });
+
+    Bloggify.server.page.add("/api/save/page", "post", function (lien) {
+
+        var sessionData = lien.session.getData();
+        if (!sessionData) {
+            return lien.end({
+                error: "You're not authorized."
+            }, 403);
+        }
+
+        var pageData = lien.data
+          , invalidFields = []
+          ;
+
+        if (typeof pageData.title !== "string" || !pageData.title.length) {
+            invalidFields.push("title");
+        }
+
+        if (typeof pageData.content !== "string" || !pageData.content.length) {
+            invalidFields.push("content");
+        }
+
+        pageData.order = parseInt(pageData.order);
+        if (isNaN(pageData.order)) {
+            invalidFields.push("order");
+        }
+
+        if (invalidFields.length) {
+            return lien.end({
+                error: "validate_error"
+              , fields: invalidFields
+            }, 400);
+        }
+
+        pageData.slug = pageData.slug || Utils.slug(pageData.title);
+        pageData.path = pageData.path || "/" + pageData.slug;
+
+        var page = Utils.cloneObject(pageData, true);
+        delete page.content;
+
+        Bloggify.pages.insert(page, function (err) {
+
+            if (err) {
+                Bloggify.log(err, "error");
+                return lien.end({
+                    error: "Internal server error."
+                }, 500);
+            }
+
+            Fs.writeFile(Bloggify.config.pathContent + Bloggify.config.pages + "/" + pageData.slug + ".md", pageData.content, function (err) {
+
+                if (err) {
+                    Bloggify.log(err, "error");
+                    return lien.end({
+                        error: "Internal server error."
+                    }, 500);
+                }
+
+                if (!Bloggify._events["page:save"]) {
+                    lien.end(pageData);
+                } else {
+                    Bloggify.emit("page:save", lien, pageData);
+                }
+            });
         });
     });
 };
