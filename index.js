@@ -257,4 +257,27 @@ module.exports = function (api) {
             });
         });
     });
+
+    Bloggify.server.page.add("/api/sync", function (lien) {
+        var sessionData = lien.session.getData();
+        if (!sessionData) {
+            return lien.end({
+                error: "You're not authorized."
+            }, 403);
+        }
+
+        GitHandlers.remote(function (err) {
+
+            if (err) {
+                Bloggify.log(err, "error");
+                return lien.end({
+                    error: "Internal server error."
+                }, 500);
+            }
+
+            lien.end({
+                success: "Data synced with remote."
+            });
+        });
+    });
 };
