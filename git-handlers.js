@@ -9,7 +9,7 @@ GitHandlers.update = function (message, callback) {
         if (!data) {
             return callback(null, null);
         }
-        Repo.exec("add", ".", function (err, data) {
+        Repo.exec("add", ".", "-A", function (err, data) {
             if (err) { return callback(err); }
             Repo.exec("commit", "-m", message, callback);
         });
