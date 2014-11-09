@@ -148,17 +148,8 @@ module.exports = function (api) {
         var page = Utils.cloneObject(pageData, true);
         delete page.content;
 
-        Bloggify.pages.update({ slug: page.slug }, page, { upsert: true}, function (err) {
-
-            if (err) {
-                Bloggify.log(err, "error");
-                return lien.end({
-                    error: "Internal server error."
-                }, 500);
-            }
-
-            var fileName = Bloggify.config.pathContent + Bloggify.config.pages + "/" + pageData.slug + ".md";
-            Fs.writeFile(fileName, pageData.content, function (err) {
+        function savePage() {
+            Bloggify.pages.update({ slug: page.slug }, page, { upsert: true}, function (err) {
 
                 if (err) {
                     Bloggify.log(err, "error");
@@ -167,15 +158,35 @@ module.exports = function (api) {
                     }, 500);
                 }
 
-                GitHandlers.update("Page saved: " + pageData.title, function (err, data) {
-                    if (!Bloggify._events["page:save"]) {
-                        lien.end(pageData);
-                    } else {
-                        Bloggify.emit("page:save", lien, pageData);
+                var fileName = Bloggify.config.pathContent + Bloggify.config.pages + "/" + pageData.slug + ".md";
+                Fs.writeFile(fileName, pageData.content, function (err) {
+
+                    if (err) {
+                        Bloggify.log(err, "error");
+                        return lien.end({
+                            error: "Internal server error."
+                        }, 500);
                     }
+
+                    GitHandlers.update("Page saved: " + pageData.title, function (err, data) {
+                        if (err) {
+                            Bloggify.log(err, "error");
+                            return lien.end({
+                                error: "Internal server error."
+                            }, 500);
+                        }
+
+                        lien.end(page);
+                    });
                 });
             });
-        });
+        }
+
+        if (!Bloggify._events["page:save"]) {
+            savePage();
+        } else {
+            Bloggify.emit("page:save", lien, pageData, savePage);
+        }
     });
 
     Bloggify.server.page.add("/api/save/article", "post", function (lien) {
@@ -221,23 +232,21 @@ module.exports = function (api) {
             }
 
             articleData.slug = articleData.slug || Utils.slug(articleData.title);
-            articleData.date = new Date(articleData.date) || new Date();
+            if (articleData.date) {
+                articleData.date = new Date(articleData.date)
+            } else {
+                articleData.date = new Date();
+            }
+
             articleData.by = sessionData.displayName || sessionData.username || "Ghost";
 
-            var article = Utils.cloneObject(articleData, true);
-            delete article.content;
 
-            Bloggify.posts.update({ id: article.id }, article, { upsert: true}, function (err) {
+            function saveArticle() {
 
-                if (err) {
-                    Bloggify.log(err, "error");
-                    return lien.end({
-                        error: "Internal server error."
-                    }, 500);
-                }
+                var article = Utils.cloneObject(articleData, true);
+                delete article.content;
 
-                var fileName = Bloggify.config.pathContent + Bloggify.config.posts + "/" + articleData.id + ".md";
-                Fs.writeFile(fileName, articleData.content, function (err) {
+                Bloggify.posts.update({ id: article.id }, article, { upsert: true}, function (err) {
 
                     if (err) {
                         Bloggify.log(err, "error");
@@ -246,15 +255,36 @@ module.exports = function (api) {
                         }, 500);
                     }
 
-                    GitHandlers.update("Article saved: " + articleData.title, function (err, data) {
-                        if (!Bloggify._events["article:save"]) {
-                            lien.end(articleData);
-                        } else {
-                            Bloggify.emit("article:save", lien, articleData);
+                    var fileName = Bloggify.config.pathContent + Bloggify.config.posts + "/" + articleData.id + ".md";
+                    Fs.writeFile(fileName, articleData.content, function (err) {
+
+                        if (err) {
+                            Bloggify.log(err, "error");
+                            return lien.end({
+                                error: "Internal server error."
+                            }, 500);
                         }
+
+                        GitHandlers.update("Article saved: " + articleData.title, function (err, data) {
+                            if (err) {
+                                Bloggify.log(err, "error");
+                                return lien.end({
+                                    error: "Internal server error."
+                                }, 500);
+                            }
+                            lien.end({
+                                success: "Article saved."
+                            });
+                        });
                     });
                 });
-            });
+            }
+
+            if (!Bloggify._events["article:save"]) {
+                saveArticle();
+            } else {
+                Bloggify.emit("article:save", lien, articleData, saveArticle);
+            }
         });
     });
 
