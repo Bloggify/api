@@ -178,7 +178,7 @@ module.exports = function (api) {
         });
     });
 
-    Bloggify.server.page.add("/api/save/post", "post", function (lien) {
+    Bloggify.server.page.add("/api/save/article", "post", function (lien) {
 
         var sessionData = lien.session.getData();
         if (!sessionData) {
@@ -187,7 +187,7 @@ module.exports = function (api) {
             }, 403);
         }
 
-        var articleData = lien.data
+        var articleData = lien.data || {}
           , invalidFields = []
           ;
 
@@ -195,7 +195,7 @@ module.exports = function (api) {
             invalidFields.push("title");
         }
 
-        if (typeof pageData.content !== "string" || !pageData.content.length) {
+        if (typeof articleData.content !== "string" || !articleData.content.length) {
             invalidFields.push("content");
         }
 
@@ -208,7 +208,7 @@ module.exports = function (api) {
                 }, 500);
             }
 
-            articleData.id = parseInt(articleData.id || count + 1);
+            articleData.id = parseInt(articleData.id) || count + 1;
             if (isNaN(articleData.id)) {
                 invalidFields.push("id");
             }
@@ -222,12 +222,12 @@ module.exports = function (api) {
 
             articleData.slug = articleData.slug || Utils.slug(articleData.title);
             articleData.date = new Date(articleData.date) || new Date();
-            articleData.by = sessionData.username || "Ghost";
+            articleData.by = sessionData.displayName || sessionData.username || "Ghost";
 
             var article = Utils.cloneObject(articleData, true);
             delete article.content;
 
-            Bloggify.posts.update({ id: articleData }, article, { upsert: true}, function (err) {
+            Bloggify.posts.update({ id: article.id }, article, { upsert: true}, function (err) {
 
                 if (err) {
                     Bloggify.log(err, "error");
