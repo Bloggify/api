@@ -15,3 +15,17 @@ GitHandlers.update = function (message, callback) {
         });
     });
 };
+
+GitHandlers.remote = function (callback) {
+    Repo.currentBranch(function (err, branch) {
+        if (err) { return callback(err); }
+        branch = branch || "master";
+        Repo.exec("pull", "origin", branch, function (err, data) {
+            if (err) { return callback(err); }
+            Repo.exec("push", "origin", branch, function (err, data) {
+                if (err) { return callback(err); }
+                callback(null, data);
+            });
+        });
+    });
+};
