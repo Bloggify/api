@@ -60,8 +60,8 @@ module.exports = function (api) {
     });
 
     // Get Article
-    Bloggify.server.page.add(/\/api\/post\/[0-9]+$/, function (lien) {
-        var id = (lien.pathName.match(/\/api\/post\/([0-9]+)$/) || [])[1];
+    Bloggify.server.page.add(/\/api\/article\/[0-9]+$/, function (lien) {
+        var id = (lien.pathName.match(/\/api\/article\/([0-9]+)$/) || [])[1];
         Api.articles.get.call(lien, id, lien.data, responseHandler(lien));
     });
 
