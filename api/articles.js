@@ -43,7 +43,7 @@ Articles.get = function (id, data, callback) {
         });
     }
 
-    data.m_query = { id: id };
+    data.query = { id: id };
 
     Articles.list.call(this, data, function (err, data) {
         if (err) { return callback(err); }
