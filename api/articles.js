@@ -128,7 +128,7 @@ Articles.save = function (data, callback) {
         invalidFields.push("content");
     }
 
-    Bloggify.posts.count(function (err, count) {
+    Bloggify.articles.count(function (err, count) {
         if (err) { return callback(err); }
 
         articleData.id = parseInt(articleData.id) || count + 1;
@@ -158,10 +158,10 @@ Articles.save = function (data, callback) {
             var article = Utils.cloneObject(articleData, true);
             delete article.content;
 
-            Bloggify.posts.update({ id: article.id }, article, { upsert: true}, function (err) {
+            Bloggify.articles.update({ id: article.id }, article, { upsert: true}, function (err) {
                 if (err) { return callback(err); }
 
-                var fileName = Bloggify.config.pathContent + Bloggify.config.posts + "/" + articleData.id + ".md";
+                var fileName = Bloggify.config.pathContent + Bloggify.config.articles + "/" + articleData.id + ".md";
                 Fs.writeFile(fileName, articleData.content, function (err) {
                     if (err) { return callback(err); }
 
@@ -207,7 +207,7 @@ Articles.delete = function (data, callback) {
         });
     }
 
-    Bloggify.posts.findOne({
+    Bloggify.articles.findOne({
         id: data.id
     }, function (err, article) {
         if (err) { return callback(err); }
@@ -218,9 +218,9 @@ Articles.delete = function (data, callback) {
             });
         }
 
-        var articlePath = Bloggify.config.pathContent + Bloggify.config.posts + "/" + article.id + ".md";
+        var articlePath = Bloggify.config.pathContent + Bloggify.config.articles + "/" + article.id + ".md";
         Fs.unlink(articlePath, function (err) {
-            Bloggify.posts.remove({
+            Bloggify.articles.remove({
                 id: article.id
             }, function (err, count) {
                 if (err) { return callback(err); }
