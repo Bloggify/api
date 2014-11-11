@@ -1,6 +1,7 @@
 var Cache = require(Bloggify.ROOT + "/lib/common/cache")
   , Utils = require(Bloggify.ROOT + "/utils")
   , GitHandlers = require("./git_handlers")
+  , Fs = require("fs")
   ;
 
 var Articles = module.exports = {};
@@ -62,6 +63,7 @@ Articles.save = function (data, callback) {
     var self = this
       , articleData = Object(data)
       , invalidFields = []
+      , sessionData = Object(self.session && self.session.getData())
       ;
 
     if (typeof articleData.title !== "string" || !articleData.title.length) {
@@ -95,7 +97,7 @@ Articles.save = function (data, callback) {
             articleData.date = new Date();
         }
 
-        articleData.by = sessionData.displayName || sessionData.username || "Ghost";
+        articleData.by = sessionData.displayName || sessionData.username || data.author || "Ghost";
 
         function saveArticle() {
 
