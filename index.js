@@ -32,7 +32,7 @@ module.exports = function (api) {
     }
 
     Bloggify.server.page.add("/api/pages", function (lien) {
-        Api.articles.list.call(lien, lien.data, responseHandler(lien));
+        Api.pages.list.call(lien, lien.data, responseHandler(lien));
     });
 
     Bloggify.server.page.add("/api/posts", function (lien) {
