@@ -109,6 +109,124 @@ module.exports = function (api) {
         });
     });
 
+    Bloggify.server.page.add("/api/delete/page", "post", function (lien) {
+        var sessionData = lien.session.getData();
+        if (!sessionData) {
+            return lien.end({
+                error: "You're not authorized."
+            }, 403);
+        }
+
+        var data = Object(lien.data);
+        if (!data.slug) {
+            return lien.end({
+                error: "Pass the slug value."
+            });
+        }
+
+        // TODO Delete page
+        Bloggify.pages.findOne({
+            slug: data.slug
+        }, function (err, page) {
+
+            if (err) {
+                return lien.end({
+                    error: "Internal server error."
+                }, 500);
+            }
+
+            if (!page) {
+                return lien.end({
+                    error: "Page not found."
+                }, 404);
+            }
+
+            var pagePath = Bloggify.config.pathContent + Bloggify.config.pages + "/" + page.slug + ".md";
+            Fs.unlink(pagePath, function (err) {
+                Bloggify.pages.remove({
+                    slug: page.slug
+                }, function (err, count) {
+                    if (err) {
+                        return lien.end({
+                            error: "Internal server error."
+                        }, 500);
+                    }
+
+                    GitHandlers.update("Page deleted: " + page.title, function (err, data) {
+                        if (err) {
+                            return lien.end({
+                                error: "Internal server error."
+                            }, 500);
+                        }
+
+                        lien.end({
+                            success: "Page was deleted."
+                        });
+                    });
+                });
+            });
+        });
+    });
+
+    Bloggify.server.page.add("/api/delete/article", "post", function (lien) {
+        var sessionData = lien.session.getData();
+        if (!sessionData) {
+            return lien.end({
+                error: "You're not authorized."
+            }, 403);
+        }
+
+        var data = Object(lien.data);
+        data.id = parseInt(data.id);
+        if (isNaN(data.id)) {
+            return lien.end({
+                error: "Article id is invalid."
+            });
+        }
+
+        Bloggify.posts.findOne({
+            id: data.id
+        }, function (err, article) {
+
+            if (err) {
+                return lien.end({
+                    error: "Internal server error."
+                }, 500);
+            }
+
+            if (!article) {
+                return lien.end({
+                    error: "Article not found."
+                }, 404);
+            }
+
+            var articlePath = Bloggify.config.pathContent + Bloggify.config.posts + "/" + article.id + ".md";
+            Fs.unlink(articlePath, function (err) {
+                Bloggify.posts.remove({
+                    id: article.id
+                }, function (err, count) {
+                    if (err) {
+                        return lien.end({
+                            error: "Internal server error."
+                        }, 500);
+                    }
+
+                    GitHandlers.update("Article deleted: " + article.title, function (err, data) {
+                        if (err) {
+                            return lien.end({
+                                error: "Internal server error."
+                            }, 500);
+                        }
+
+                        lien.end({
+                            success: "Article was deleted."
+                        });
+                    });
+                });
+            });
+        });
+    });
+
     Bloggify.server.page.add("/api/save/page", "post", function (lien) {
 
         var sessionData = lien.session.getData();
