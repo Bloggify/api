@@ -19,6 +19,7 @@ Bloggify official api plugin.
             <th>Method</th>
             <th>Url</th>
             <th>Description</th>
+            <th>Requires Auth</th>
         </tr>
     </thead>
     <tbody>
@@ -26,46 +27,55 @@ Bloggify official api plugin.
             <td><code>GET|POST</code></td>
             <td><code>/api/articles</code></td>
             <td>Lists summary details of articles.</td>
+            <td>No</td>
         </tr>
         <tr>
             <td><code>GET|POST</code></td>
             <td><code>/api/article/:id</code></td>
             <td>Lists summary details of an article.</td>
+            <td>No</td>
         </tr>
         <tr>
             <td><code>POST</code></td>
             <td><code>/api/save/article</code></td>
             <td>Saves an article</td>
+            <td>Yes</td>
         </tr>
         <tr>
             <td><code>POST</code></td>
             <td><code>/api/delete/article</code></td>
             <td>Deletes an article</td>
+            <td>Yes</td>
         </tr>
         <tr>
             <td><code>GET|POST</code></td>
             <td><code>/api/pages</code></td>
             <td>Lists summary details of pages.</td>
+            <td>No</td>
         </tr>
         <tr>
             <td><code>GET|POST</code></td>
             <td><code>/api/page/:slug</code></td>
             <td>Lists summary details of a page.</td>
+            <td>No</td>
         </tr>
         <tr>
             <td><code>POST</code></td>
             <td><code>/api/save/page</code></td>
             <td>Saves anpage</td>
+            <td>Yes</td>
         </tr>
         <tr>
             <td><code>POST</code></td>
             <td><code>/api/delete/page</code></td>
             <td>Deletes a page</td>
+            <td>Yes</td>
         </tr>
         <tr>
             <td><code>GET</code></td>
             <td><code>/api/sync</code></td>
             <td>Sync remote data with local data.</td>
+            <td>Yes</td>
         </tr>
     </tbody>
 </table>
