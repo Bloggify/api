@@ -51,7 +51,6 @@ module.exports = function (api) {
         return false;
     }
 
-
     /*!
      *  Rest API
      * */
