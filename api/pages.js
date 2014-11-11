@@ -1,6 +1,7 @@
 var Cache = require(Bloggify.ROOT + "/lib/common/cache")
   , Utils = require(Bloggify.ROOT + "/utils")
   , GitHandlers = require("./git_handlers")
+  , Fs = require("fs")
   ;
 
 var Pages = module.exports = {};
@@ -93,7 +94,7 @@ Pages.delete = function (data, callback) {
 Pages.save = function (data, callback) {
 
     var self = this
-      , pageData = lien.data
+      , pageData = data
       , invalidFields = []
       ;
 
