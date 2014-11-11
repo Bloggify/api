@@ -19,16 +19,16 @@ module.exports = function (api) {
         }
     }
 
-    function authorizeError(lien) {
+    function sessionCheck(lien) {
         var sessionData = lien.session.getData();
         if (!sessionData) {
             return lien.end({
                 error: "autorize_error"
               , message: "You're not authorized."
             }, 403);
-            return false;
+            return true;
         }
-        return true;
+        return false;
     }
 
     Bloggify.server.page.add("/api/pages", function (lien) {
@@ -55,22 +55,22 @@ module.exports = function (api) {
     });
 
     Bloggify.server.page.add("/api/delete/article", "post", function (lien) {
-        if (autorizeError(lien)) { return; }
+        if (sessionCheck(lien)) { return; }
         Api.articles.delete.call(lien, lien.data, responseHandler(lien));
     });
 
     Bloggify.server.page.add("/api/save/page", "post", function (lien) {
-        if (autorizeError(lien)) { return; }
+        if (sessionCheck(lien)) { return; }
         Api.pages.save.call(lien, lien.data, responseHandler(lien));
     });
 
     Bloggify.server.page.add("/api/save/article", "post", function (lien) {
-        if (autorizeError(lien)) { return; }
+        if (sessionCheck(lien)) { return; }
         Api.articles.save.call(lien, lien.data, responseHandler(lien));
     });
 
     Bloggify.server.page.add("/api/sync", function (lien) {
-        if (autorizeError(lien)) { return; }
+        if (sessionCheck(lien)) { return; }
         Api.util.sync.call(lien, responseHandler(lien));
     });
 };
