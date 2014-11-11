@@ -37,9 +37,9 @@ Pages.get = function (slug, data, callback) {
       , data
     );
 
-    data.m_query = { slug: slug };
+    data.query = { slug: slug };
 
-    Pages.list.call(this, data, data.m_options, data.options, function (err, page) {
+    Pages.list.call(this, data, function (err, page) {
         if (err) { return callback(err, 500); }
         if (!page.length) {
             return callback({
