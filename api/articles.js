@@ -1,10 +1,37 @@
+// Dependencies
 var Cache = require(Bloggify.ROOT + "/lib/common/cache")
   , Utils = require(Bloggify.ROOT + "/utils")
   , GitHandlers = require("./git_handlers")
   , Fs = require("fs")
   ;
 
+/*!
+ *  Article APIs
+ *  ============
+ *   - list
+ *   - get
+ *   - save
+ *   - delete
+ */
 var Articles = module.exports = {};
+
+/**
+ * list
+ * Lists summary details about articles.
+ *
+ * @name list
+ * @function
+ * @param {Object} data An object containing the following fields:
+ *
+ *  - `Object` *query* The query applied to find request (Default: `{}`).
+ *  - `Object` *m_options* The options applied to find request (Default: `{}`).
+ *  - `Object` *options* An object containing the following fields:
+ *    - `Boolean` *noContent* If `false`, the content of articles will be fetched (Default: true).
+ *    - `Boolean` *markdown* If `true`, the content will be parsed as Markdown (Default: true).
+ *
+ * @param {Function} callback The callback function (err, responseObj).
+ * @return {undefined}
+ */
 Articles.list = function (data, callback) {
     var def = {
         query: {}
@@ -22,6 +49,23 @@ Articles.list = function (data, callback) {
     Cache.post(data.query, data.m_options, data.options, callback);
 };
 
+/**
+ * get
+ * Gets summary details of an article.
+ *
+ * @name get
+ * @function
+ * @param {Integer|String} id The article id.
+ * @param {Object} data An object containing the following fields:
+ *
+ *  - `Object` *m_options* The options applied to find request (Default: `{}`).
+ *  - `Object` *options* An object containing the following fields:
+ *    - `Boolean` *noContent* If `false`, the content of articles will be fetched (Default: true).
+ *    - `Boolean` *markdown* If `true`, the content will be parsed as Markdown (Default: true).
+ *
+ * @param {Function} callback The callback function (err, responseObj).
+ * @return {undefined}
+ */
 Articles.get = function (id, data, callback) {
 
     var def = {
@@ -58,6 +102,16 @@ Articles.get = function (id, data, callback) {
     });
 };
 
+/**
+ * save
+ * Creates or updates an article.
+ *
+ * @name save
+ * @function
+ * @param {Object} data An object that must containin valid fields, following article schema.
+ * @param {Function} callback The callback function (err, responseObj).
+ * @return {undefined}
+ */
 Articles.save = function (data, callback) {
 
     var self = this
@@ -129,6 +183,19 @@ Articles.save = function (data, callback) {
     });
 };
 
+/**
+ * delete
+ * Deletes an article.
+ *
+ * @name delete
+ * @function
+ * @param {Object} data An object containing the following fields:
+ *
+ *  - `String|Integer` id: The article id that should be deleted.
+ *
+ * @param {Function} callback The callback function (err, responseObj).
+ * @return {undefined}
+ */
 Articles.delete = function (data, callback) {
     var data = Object(data);
     data.id = parseInt(data.id);

@@ -1,4 +1,6 @@
-var Api = module.exports = {};
-Api.pages = require("./pages");
-Api.articles = require("./articles");
-Api.util = require("./util");
+// Bloggify APIs
+module.exports = {
+    pages: require("./pages")
+  , articles: require("./articles")
+  , util: require("./util")
+};
