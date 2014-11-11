@@ -4,7 +4,7 @@ var Util = module.exports = {};
 Util.sync = function (callback) {
     GitHandlers.remote(function (err) {
         if (err) { return callback(err); }
-        callback({
+        callback(null, {
             success: "Data synced with remote."
         });
     });
