@@ -1,5 +1,7 @@
+// Dependencies
 var Api = require("./api");
 
+// Bloggify APIs
 module.exports = function (api) {
 
     /**
@@ -50,6 +52,9 @@ module.exports = function (api) {
     }
 
 
+    /*!
+     *  Rest API
+     * */
     // List articles
     Bloggify.server.page.add("/api/articles", function (lien) {
         Api.articles.list.call(lien, lien.data, responseHandler(lien));
