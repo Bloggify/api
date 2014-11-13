@@ -1,6 +1,6 @@
 // Dependencies
-var Cache = require(Bloggify.ROOT + "/lib/common/cache")
-  , Utils = require(Bloggify.ROOT + "/utils")
+var Cache = require(Bloggify.PATH_LIB + "/common/cache")
+  , Utils = require(Bloggify.PATH_UTIL)
   , GitHandlers = require("./git_handlers")
   , Fs = require("fs")
   ;
