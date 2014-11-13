@@ -46,7 +46,7 @@ Articles.list = function (data, callback) {
       , data
     );
 
-    Cache.post(data.query, data.m_options, data.options, callback);
+    Cache.article(data.query, data.m_options, data.options, callback);
 };
 
 /**
@@ -83,7 +83,7 @@ Articles.get = function (id, data, callback) {
     id = parseInt(id);
     if (isNaN(id)) {
         return callback({
-            error: "Invalid post id."
+            error: "Invalid article id."
           , statusCode: 404
         });
     }
@@ -94,7 +94,7 @@ Articles.get = function (id, data, callback) {
         if (err) { return callback(err); }
         if (!data.length) {
             return callback({
-                error: "Post not found"
+                error: "Article not found"
               , statusCode: 404
             });
         }
