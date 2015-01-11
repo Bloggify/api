@@ -2,6 +2,7 @@
 var Api = require("./api")
   , ResponseHandler = require("./lib/response")
   , SessionCheck = require("./lib/session_check")
+  , Utils = require(Bloggify.PATH_UTIL)
   ;
 
 // Bloggify APIs
@@ -59,5 +60,14 @@ module.exports = function (api) {
     Bloggify.server.page.add("/api/sync", function (lien) {
         if (SessionCheck(lien)) { return; }
         Api.util.sync.call(lien, ResponseHandler(lien));
+    });
+
+    this.on("request", function (api, data, callback, scope) {
+        api = Utils.findFunction(Api, api);
+        if (!api) {
+            return callback(new Error("No such an API."));
+        }
+        scope = scope || {};
+        api.call(scope, data, callback);
     });
 };
