@@ -13,7 +13,7 @@
   "author": "Ionică Bizău <bizauionica@gmail.com> (http://ionicabizau.net/)",
   "license": "MIT",
   "dependencies": {
-      "git-tags": "0.1.4"
+      "git-tools": "0.1.4"
   },
   "bugs": {
     "url": "https://github.com/IonicaBizau/api/issues"
