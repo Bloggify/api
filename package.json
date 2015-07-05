@@ -2,7 +2,7 @@
   "name": "bloggify-api",
   "version": "0.0.0",
   "description": "Bloggify official api plugin.",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -11,7 +11,7 @@
     "url": "https://github.com/IonicaBizau/api.git"
   },
   "author": "Ionică Bizău <bizauionica@gmail.com> (http://ionicabizau.net/)",
-  "license": "MIT",
+  "license": "KINDLY",
   "dependencies": {
       "git-tools": "0.1.4"
   },
