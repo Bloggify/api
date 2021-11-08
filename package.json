@@ -1,14 +1,14 @@
 {
   "name": "bloggify-api",
-  "version": "0.0.0",
-  "description": "Bloggify official api plugin.",
+  "version": "1.0.0",
+  "description": "REST API for accessing Bloggify resources (pages, articles etc).",
   "main": "lib/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/IonicaBizau/api.git"
+    "url": "https://github.com/Bloggify/bloggify-api.git"
   },
   "author": "Bloggify <support@bloggify.org> (https://bloggify.org)",
   "license": "MIT",
@@ -16,9 +16,9 @@
     "git-tools": "0.1.4"
   },
   "bugs": {
-    "url": "https://github.com/IonicaBizau/api/issues"
+    "url": "https://github.com/Bloggify/bloggify-api/issues"
   },
-  "homepage": "https://github.com/IonicaBizau/api",
+  "homepage": "https://github.com/Bloggify/bloggify-api",
   "keywords": [
     "bloggify",
     "api"
