@@ -1,6 +1,6 @@
 {
   "name": "bloggify-api",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "REST API for accessing Bloggify resources (pages, articles etc).",
   "main": "lib/index.js",
   "scripts": {
